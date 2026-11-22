@@ -1,0 +1,24 @@
+{
+  "name": "Lern-Hub – Spielerisch üben mit Lumi",
+  "short_name": "Lern-Hub",
+  "description": "Spielerische Lernplattform für Klasse 5 mit Lernpfad, Satzbau, Quiz, Schreibtrainer und Lumi-Garderobe.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6ff",
+  "theme_color": "#4f46e5",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "assets/img/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lern-Hub – Spielerisch üben mit Lumi</title>
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Lern-Hub" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/img/icon-512.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script>
+    try {
+      var raw = localStorage.getItem("lernhub_progress_v2");
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && parsed.settings && parsed.settings.theme === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      }
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button type="button" id="btn-home" class="brand-btn" title="Zurück zur Übersicht">
+        <span class="brand-avatar-wrap frame-classic" id="brand-avatar-wrap">
+          <img src="assets/img/mascot-happy.png" alt="Lumi" class="brand-avatar" id="brand-avatar-img" />
+        </span>
+        <span>Lern-Hub</span>
+      </button>
+
+      <div class="stats-bar">
+        <span class="stat-pill stat-stars" title="Gesammelte Sterne (Level)">⭐ <strong id="total-stars">0</strong></span>
+        <span class="stat-pill stat-streak" title="Aktuelle Serie">🔥 <strong id="current-streak">0</strong></span>
+        <button type="button" id="btn-open-wardrobe" class="stat-pill stat-pill-btn stat-coins" title="Lumi-Garderobe &amp; Münzen">
+          🦊 <strong id="total-coins">0</strong> 🪙
+        </button>
+        <button type="button" id="btn-open-badges" class="stat-pill stat-pill-btn" title="Abzeichen &amp; Einstellungen">
+          🏆 <strong id="badges-count">0/10</strong>
+        </button>
+        <button type="button" id="btn-toggle-theme" class="stat-pill stat-pill-btn icon-only" title="Abend-Modus umschalten" aria-label="Abend-Modus umschalten">
+          🌙
+        </button>
+        <button type="button" id="btn-toggle-sound" class="stat-pill stat-pill-btn icon-only" title="Ton an/aus" aria-label="Ton umschalten">
+          🔊
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Ansicht 1: Dashboard / Lernpfad & Kacheln -->
+    <section id="view-dashboard" class="view active">
+      <div class="hero-card">
+        <img src="assets/img/banner-space.png" alt="" class="hero-bg-img" aria-hidden="true" />
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-text-col">
+            <div class="hero-level-row">
+              <span class="level-badge" id="hero-level-badge">Level 1 · Sternen-Starter</span>
+              <span class="daily-pill" id="hero-daily-pill">🎯 Heute: 0 / 15</span>
+            </div>
+            <h1>Hallo! Bereit für neue Sterne?</h1>
+            <p id="hero-subtitle">Lumi hat frische Aufgaben für dich gemischt. Jede Übung bringt dich weiter!</p>
+
+            <div class="hero-bars">
+              <div class="hero-progress-group">
+                <div class="hero-progress-label">
+                  <span>Nächstes Level</span>
+                  <span id="hero-xp-text">0 / 15 ⭐</span>
+                </div>
+                <div class="mini-progress-track hero-track">
+                  <div class="mini-progress-fill hero-fill" id="hero-xp-bar" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-actions">
+              <button type="button" id="btn-hero-action" class="btn btn-gold">
+                🎲 Zufalls-Übung starten
+              </button>
+              <button type="button" id="btn-hero-wardrobe" class="btn btn-glass">
+                🦊 Lumi-Garderobe
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-mascot-col">
+            <div class="mascot-medallion frame-classic" id="hero-mascot-wrap">
+              <img src="assets/img/mascot-happy.png" alt="Lumi der Lern-Fuchs" class="mascot-hero-img" id="hero-mascot-img" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter, Ansichts-Umschalter & Rundenlänge -->
+      <div class="controls-bar">
+        <div class="filter-group">
+          <div id="subject-tabs" class="subject-tabs" role="tablist" aria-label="Fächer"></div>
+          <select id="grade-filter" class="grade-select hidden" aria-label="Klassenstufe wählen"></select>
+        </div>
+
+        <div class="controls-right">
+          <div class="segmented-pills" id="view-mode-pills" title="Darstellung wählen">
+            <button type="button" class="size-pill active" data-view="path">🗺️ Pfad</button>
+            <button type="button" class="size-pill" data-view="grid">⊞ Kacheln</button>
+          </div>
+
+          <div class="round-size-picker" title="Anzahl Aufgaben pro Runde">
+            <span class="round-size-label">Runde:</span>
+            <div class="round-size-pills" id="round-size-pills">
+              <button type="button" class="size-pill" data-size="5">5</button>
+              <button type="button" class="size-pill active" data-size="10">10</button>
+              <button type="button" class="size-pill" data-size="15">15</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="module-container"></div>
+    </section>
+
+    <!-- Ansicht 2: Aktives Spiel -->
+    <section id="view-game" class="view">
+      <div class="game-header">
+        <button type="button" id="btn-back" class="btn btn-secondary">← Übersicht</button>
+        <div class="game-meta">
+          <span id="game-badge" class="badge">Fach</span>
+          <h2 id="game-title">Modultitel</h2>
+        </div>
+        <div class="game-header-right">
+          <button type="button" id="btn-game-cheatsheet" class="btn btn-secondary btn-compact hidden" title="Grammatik-Spickzettel öffnen">
+            📖 Spickzettel
+          </button>
+          <div id="game-progress-text" class="progress-text">1 / 10</div>
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div id="game-progress-bar" class="progress-fill"></div>
+      </div>
+
+      <!-- Lumi Begleiter-Leiste -->
+      <div class="mascot-companion-bar" id="mascot-companion-bar">
+        <div class="mascot-avatar-wrap">
+          <div class="mascot-avatar-sm frame-classic" id="mascot-game-wrap">
+            <img src="assets/img/mascot-happy.png" alt="Lumi" id="mascot-game-img" />
+          </div>
+          <span class="mascot-mood-badge hidden" id="mascot-mood-badge" aria-hidden="true"></span>
+        </div>
+        <div class="mascot-bubble" id="mascot-game-bubble">
+          Los geht's! Du schaffst das!
+        </div>
+      </div>
+
+      <!-- Hier rendert die jeweilige Spiel-Engine hinein -->
+      <div id="game-stage" class="game-stage"></div>
+    </section>
+  </main>
+
+  <!-- Abzeichen & Einstellungen Modal -->
+  <div id="modal-badges" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">🏆 Deine Abzeichen &amp; Statistik</h2>
+        <button type="button" id="btn-close-modal" class="btn-close-modal" aria-label="Schließen">✕</button>
+      </div>
+
+      <div class="modal-stats-row" id="modal-stats-row"></div>
+
+      <h3 class="modal-section-title">Sammel-Abzeichen</h3>
+      <div class="badges-grid" id="badges-grid"></div>
+
+      <h3 class="modal-section-title">Einstellungen</h3>
+      <div class="settings-list">
+        <label class="setting-row">
+          <span>🌙 Abend-Modus (Dunkles Design)</span>
+          <input type="checkbox" id="chk-darkmode" />
+        </label>
+        <label class="setting-row">
+          <span>🔊 Spiel-Sounds (Klicks &amp; Belohnungen)</span>
+          <input type="checkbox" id="chk-sound" />
+        </label>
+        <label class="setting-row">
+          <span>🗣️ Englische Lösungen bei Treffer automatisch vorlesen</span>
+          <input type="checkbox" id="chk-autospeak" />
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-reset-progress" class="btn btn-danger-outline">
+          🗑️ Fortschritt zurücksetzen
+        </button>
+        <button type="button" id="btn-modal-done" class="btn btn-primary">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lumi-Garderobe Modal -->
+  <div id="modal-wardrobe" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="wardrobe-title">
+    <div class="modal-card modal-wide">
+      <div class="modal-header">
+        <h2 id="wardrobe-title">🦊 Lumi-Garderobe</h2>
+        <button type="button" id="btn-close-wardrobe" class="btn-close-modal" aria-label="Schließen">✕</button>
+      </div>
+
+      <div class="wardrobe-hero">
+        <div class="wardrobe-preview-avatar frame-classic" id="wardrobe-preview-wrap">
+          <img src="assets/img/mascot-happy.png" alt="Lumi Vorschau" id="wardrobe-preview-img" />
+        </div>
+        <div class="wardrobe-hero-info">
+          <div class="wardrobe-coin-pill">🪙 <strong id="wardrobe-coins">0</strong> Münzen verfügbar</div>
+          <div class="wardrobe-equipped-text" id="wardrobe-equipped-text">Aktuell: Klassik-Lumi · Standard-Ring</div>
+          <p class="wardrobe-note">
+            Für jede richtige Antwort bekommst du <strong>+1 🪙</strong>. Deine <strong>⭐ Gesamt-Sterne &amp; dein Level</strong> bleiben beim Einkaufen immer erhalten!
+          </p>
+        </div>
+      </div>
+
+      <div class="wardrobe-tabs" id="wardrobe-tabs">
+        <button type="button" class="subject-tab active" data-tab="outfits">🦊 Outfits (5)</button>
+        <button type="button" class="subject-tab" data-tab="frames">✨ Rahmen (5)</button>
+      </div>
+
+      <div class="wardrobe-grid" id="wardrobe-grid"></div>
+
+      <div class="modal-footer" style="justify-content: flex-end;">
+        <button type="button" id="btn-wardrobe-done" class="btn btn-primary">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spickzettel Modal -->
+  <div id="modal-cheatsheet" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="cheatsheet-title">
+    <div class="modal-card modal-wide">
+      <div class="modal-header">
+        <div>
+          <h2 id="cheatsheet-title">📖 Spickzettel</h2>
+          <p class="cheatsheet-subtitle" id="cheatsheet-subtitle"></p>
+        </div>
+        <button type="button" id="btn-close-cheatsheet" class="btn-close-modal" aria-label="Schließen">✕</button>
+      </div>
+
+      <div id="cheatsheet-body" class="cheatsheet-body"></div>
+
+      <div class="modal-footer" style="justify-content: flex-end;">
+        <button type="button" id="btn-cheatsheet-done" class="btn btn-primary">Verstanden! Weiter üben</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Benachrichtigungen -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Core-Architektur -->
+  <script src="js/core/registry.js"></script>
+  <script src="js/core/storage.js"></script>
+  <script src="js/core/scheduler.js"></script>
+  <script src="js/core/feedback.js"></script>
+
+  <!-- Spiel-Engines -->
+  <script src="js/games/sentence-builder.js"></script>
+  <script src="js/games/quiz.js"></script>
+  <script src="js/games/type-in.js"></script>
+
+  <!-- Daten-Manifest & Loader -->
+  <script src="data/manifest.js"></script>
+  <script src="js/core/loader.js"></script>
+
+  <!-- Hauptsteuerung -->
+  <script src="js/app.js"></script>
+</body>
+</html>
